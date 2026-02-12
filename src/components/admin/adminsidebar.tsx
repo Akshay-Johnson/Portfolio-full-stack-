@@ -20,6 +20,7 @@ export default function AdminSidebar() {
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/dashboard/projects">Projects</Link>
         <Link href="/dashboard/resume">Resume</Link>
+        <Link href="/dashboard/about">About</Link>
         <Link href="/dashboard/messages">Messages</Link>
         <Link href="/dashboard/analytics">Analytics</Link>
       </nav>

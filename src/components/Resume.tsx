@@ -1,201 +1,166 @@
-import { Download } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
+
+function safeArray(value: any): string[] {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === "object") return Object.values(value);
+  if (typeof value === "string") return [value];
+  return [];
+}
 
 export default function Resume() {
-  return (
-    <section id="resume" className="py-20 backdrop-blur-2xl bg-black/20">
-      <div className="max-w-7xl mx-auto px-6">
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-10">
-          Resume
-        </h1>
+  const [resume, setResume] = useState<any>(null);
 
-        <div className="mb-10">
-          <a
-            href="https://drive.google.com/file/d/1SfP6TeNOJfYEgv33gNFHdhWGK4P18mfq/view?usp=drive_link"
-            target="_blank"
-            className="inline-flex items-center gap-2 bg-black px-6 py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black transition duration-300 group"
-          >
-            <Download className="w-5 h-5" />
-            <span className="opacity-0 w-0 overflow-hidden whitespace-nowrap group-hover:opacity-100 group-hover:w-auto transition-all">
-              Download Now
-            </span>
-          </a>
-        </div>
+  useEffect(() => {
+    fetch("/api/resume")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Resume Data:", data);
+        setResume(data);
+      });
+  }, []);
+
+  if (!resume) return null;
+
+  return (
+    <section className="py-20 backdrop-blur-2xl bg-black/20">
+      <a
+        href="/api/resume/pdf"
+        target="_blank"
+        className="bg-white text-black px-6 py-3 rounded-xl"
+      >
+        Download Resume PDF
+      </a>
+
+      <div className="max-w-7xl mx-auto px-6">
+        <h1 className="text-4xl text-center mb-10">Resume</h1>
 
         <div className="grid md:grid-cols-2 gap-12">
+          {/* LEFT */}
           <div className="space-y-6">
+
+            {/* Profile */}
             <div>
-              <h4 className="text-xl font-bold">Akshay P Johnson</h4>
-              <p>
-                <strong>Role:</strong> Full Stack Developer (Fresher)
-              </p>
-              <p>
-                <strong>Phone:</strong> +91 8137913653
-              </p>
-              <p>
-                <strong>Email:</strong> akshayjohnson117@gmail.com
-              </p>
-              <p>
-                <strong>Location:</strong> Thrissur, Kerala, India
-              </p>
-              <p>
-                <strong>GitHub:</strong> github.com/Akshay-Johnson |
-                <strong>LinkedIn:</strong> linkedin.com/in/akshay-p-johnson
+              <h2 className="text-xl font-bold">
+                {resume.profile?.name}
+              </h2>
+
+              <p>{resume.profile?.phone}</p>
+              <p>{resume.profile?.email}</p>
+              <p>{resume.profile?.location}</p>
+              <p>GitHub: {resume.profile?.github}</p>
+              <p>LinkedIn: {resume.profile?.linkedin}</p>
+
+              <p className="mt-3 text-white/80">
+                {resume.profile?.summary}
               </p>
             </div>
 
-            <hr className="border-white/20" />
-
+            {/* Experience */}
             <div>
-              <h4 className="text-xl font-bold mb-2">Professional Summary</h4>
-              <p className="text-white/90 leading-relaxed">
-                Entry-Level Full Stack Developer with hands-on experience in
-                MERN Stack and Django, focused on building secure, scalable web
-                applications. Skilled in RESTful API development, JWT
-                authentication, role-based dashboards, and database optimization
-                using MongoDB and MySQL. Seeking a junior or trainee software
-                development role in a growth-oriented tech environment.
-              </p>
+              <h3 className="text-lg font-bold">Experience</h3>
+
+              {safeArray(resume.experience).map((exp: any, i: number) => (
+                <div key={i}>
+                  <p className="font-semibold">
+                    {exp.title} - {exp.company}
+                  </p>
+
+                  <p className="text-sm text-white/80">
+                    {exp.year}
+                  </p>
+
+                  <ul className="list-disc pl-6">
+                    {safeArray(exp.points).map((p: string, idx: number) => (
+                      <li key={idx}>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
 
-            <hr className="border-white/20" />
-
+            {/* Education */}
             <div>
-              <h4 className="text-xl font-bold mb-2">Experience</h4>
+              <h3 className="text-xl font-bold">Education</h3>
 
-              <p className="font-semibold">
-                MERN Full Stack Developer Intern — Zoople Technologies
-              </p>
-              <p className="italic text-white/70 mb-2">2025</p>
-
-              <ul className="list-disc pl-6 space-y-1 text-white/90">
-                <li>Developed full-stack food delivery platform using MERN.</li>
-                <li>Built secure REST APIs with JWT & RBAC.</li>
-                <li>Designed dashboards for multi-role users.</li>
-                <li>Optimized MongoDB queries & API performance.</li>
-                <li>Worked in Agile workflow using GitHub.</li>
-              </ul>
-            </div>
-
-            <hr className="border-white/20" />
-
-            <div>
-              <h4 className="text-xl font-bold mb-2">Education</h4>
-
-              <ul className="space-y-4 text-white/90">
-                <li>
-                  <strong>MCA</strong>
-                  <br />
-                  Vidya Academy of Science and Technology
-                  <br />
-                  APJ Abdul Kalam Technological University
-                  <br />
-                  <em>2025</em>
-                </li>
-
-                <li>
-                  <strong>BCA</strong>
-                  <br />
-                  A.C. Kunhimon Haji Memorial ICA
-                  <br />
-                  Calicut University
-                  <br />
-                  <em>2023</em>
-                </li>
-
-                <li>
-                  <strong>Higher Secondary Education</strong>
-                  <br />
-                  Bethany St. Johns
-                  <br />
-                  <em>2020</em>
-                </li>
-              </ul>
+              {safeArray(resume.education).map((edu: any, i: number) => (
+                <div key={i}>
+                  <p className="font-semibold">{edu.degree}</p>
+                  <p>{edu.institute}</p>
+                  <p>{edu.year}</p>
+                </div>
+              ))}
             </div>
           </div>
 
+          {/* RIGHT */}
           <div className="space-y-6">
+
+            {/* Skills */}
             <div>
-              <h4 className="text-xl font-bold mb-2">Technical Skills</h4>
-              <ul className="list-disc pl-6 space-y-1 text-white/90">
-                <li>
-                  <strong>Languages:</strong> JavaScript, Python
-                </li>
-                <li>
-                  <strong>Frontend:</strong> React, Next.js, Tailwind CSS
-                </li>
-                <li>
-                  <strong>Backend:</strong> Node.js, Express, Django, PHP
-                </li>
-                <li>
-                  <strong>Databases:</strong> MongoDB, MySQL
-                </li>
-                <li>
-                  <strong>Security:</strong> REST APIs, JWT, RBAC
-                </li>
-                <li>
-                  <strong>Tools:</strong> Git, GitHub, VS Code, Vercel
-                </li>
-              </ul>
+              <h3 className="text-xl font-bold">Skills</h3>
+
+              {Object.entries(resume.skills || {}).map(
+                ([key, value]: any) => (
+                  <p key={key}>
+                    <strong>{key}:</strong>{" "}
+                    {safeArray(value).join(", ")}
+                  </p>
+                )
+              )}
             </div>
 
-            <hr className="border-white/20" />
-
+            {/* Projects */}
             <div>
-              <h4 className="text-xl font-bold mb-2">Projects</h4>
+              <h3 className="text-xl font-bold">Projects</h3>
 
-              <ul className="space-y-4 text-white/90">
-                <li>
-                  <strong>DineX — MERN</strong>
-                  <br />
-                  Multi-role food delivery platform with dashboards & order
-                  tracking.
-                </li>
+              {safeArray(resume.projects).map((proj: any, i: number) => (
+                <div key={i} className="mb-4">
+                  <p className="font-semibold">{proj.title}</p>
+                  <p>{proj.description}</p>
 
-                <li>
-                  <strong>JobPilot — Next.js</strong>
-                  <br />
-                  Kanban job tracking platform with drag-drop workflows.
-                </li>
-
-                <li>
-                  <strong>TestSphere — Django</strong>
-                  <br />
-                  Secure online exam system with automated evaluation.
-                </li>
-
-                <li>
-                  <strong>MindSense — ML + Django</strong>
-                  <br />
-                  NLP system detecting stress from Twitter data.
-                </li>
-              </ul>
+                  {proj.link && (
+                    <a
+                      href={
+                        proj.link.startsWith("http")
+                          ? proj.link
+                          : `https://${proj.link}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 underline"
+                    >
+                      View Project
+                    </a>
+                  )}
+                </div>
+              ))}
             </div>
 
-            <hr className="border-white/20" />
-
+            {/* Certifications */}
             <div>
-              <h4 className="text-xl font-bold mb-2">Certifications</h4>
+              <h3 className="text-xl font-bold">Certifications</h3>
 
-              <ul className="list-disc pl-6 space-y-1 text-white/90">
-                <li>Python Web Development with Django</li>
-                <li>NoSQL MongoDB — Infosys</li>
-                <li>Agile Scrum Master — Infosys</li>
-                <li>Git Programming — IIT Bombay</li>
-                <li>Project Management — LinkedIn Learning</li>
-                <li>Internet of Things — NPTEL</li>
-              </ul>
+              {safeArray(resume.certifications).map(
+                (c: string, i: number) => (
+                  <p key={i}>{c}</p>
+                )
+              )}
             </div>
 
-            <hr className="border-white/20" />
-
+            {/* Languages */}
             <div>
-              <h4 className="text-xl font-bold mb-2">Languages</h4>
-              <ul className="list-disc pl-6 space-y-1 text-white/90">
-                <li>English</li>
-                <li>Malayalam</li>
-                <li>Tamil</li>
-              </ul>
+              <h3 className="text-xl font-bold">Languages</h3>
+
+              {safeArray(resume.languages).map(
+                (l: string, i: number) => (
+                  <p key={i}>{l}</p>
+                )
+              )}
             </div>
+
           </div>
         </div>
       </div>

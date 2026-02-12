@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Project from "@/lib/models/project";
-import path from "path";
-import fs from "fs/promises";
+import mongoose from "mongoose";
+
+/* ================= NORMALIZE URL ================= */
 
 function normalizeUrl(url?: string) {
   if (!url) return "";
@@ -10,58 +11,66 @@ function normalizeUrl(url?: string) {
   return url;
 }
 
+/* ================= UPDATE PROJECT ================= */
+
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
-    const { id } = await params;
 
-    const formData = await req.formData();
+    // ⭐ MUST await params
+    const { id } = await context.params;
 
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
-    const techStack = JSON.parse(formData.get("techStack") as string);
-    const liveUrl = formData.get("liveUrl") as string;
-    const githubUrl = formData.get("githubUrl") as string;
-    const imageFile = formData.get("image") as File | null;
-
-    const updateData: any = {
-      title,
-      description,
-      techStack,
-      liveUrl: normalizeUrl(liveUrl),
-      githubUrl: normalizeUrl(githubUrl),
-    };
-
-    // 🔁 replace image only if new file uploaded
-    if (imageFile && imageFile.size > 0) {
-      const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      const fileName = `${crypto.randomUUID()}-${imageFile.name}`;
-      const uploadDir = path.join(process.cwd(), "public/uploads");
-
-      await fs.mkdir(uploadDir, { recursive: true });
-      await fs.writeFile(path.join(uploadDir, fileName), buffer);
-
-      updateData.image = `/uploads/${fileName}`;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { message: "Invalid project ID" },
+        { status: 400 },
+      );
     }
 
-    const updated = await Project.findByIdAndUpdate(id, updateData, {
+    const body = await req.json();
+
+    const updateData: any = {};
+
+    if (body.title !== undefined) updateData.title = body.title;
+    if (body.description !== undefined)
+      updateData.description = body.description;
+    if (body.techStack !== undefined) updateData.techStack = body.techStack;
+
+    if (body.liveUrl !== undefined)
+      updateData.liveUrl = normalizeUrl(body.liveUrl);
+
+    if (body.githubUrl !== undefined)
+      updateData.githubUrl = normalizeUrl(body.githubUrl);
+
+    if (body.image !== undefined) updateData.image = body.image;
+
+    const updatedProject = await Project.findByIdAndUpdate(id, updateData, {
       new: true,
+      runValidators: true,
     });
 
-    return NextResponse.json(updated);
-  } catch (err) {
-    console.error("UPDATE PROJECT ERROR:", err);
+    if (!updatedProject) {
+      return NextResponse.json(
+        { message: "Project not found" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(updatedProject);
+  } catch (error) {
+    console.error("UPDATE PROJECT ERROR:", error);
+
     return NextResponse.json(
       { message: "Failed to update project" },
       { status: 500 },
     );
   }
 }
+
+/* ================= DELETE PROJECT ================= */
 
 export async function DELETE(
   req: Request,
@@ -70,13 +79,29 @@ export async function DELETE(
   try {
     await connectDB();
 
+    // ⭐ MUST await params
     const { id } = await context.params;
 
-    await Project.findByIdAndDelete(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { message: "Invalid project ID" },
+        { status: 400 },
+      );
+    }
+
+    const deletedProject = await Project.findByIdAndDelete(id);
+
+    if (!deletedProject) {
+      return NextResponse.json(
+        { message: "Project not found" },
+        { status: 404 },
+      );
+    }
 
     return NextResponse.json({ message: "Project deleted" });
   } catch (error) {
     console.error("DELETE PROJECT ERROR:", error);
+
     return NextResponse.json(
       { message: "Failed to delete project" },
       { status: 500 },

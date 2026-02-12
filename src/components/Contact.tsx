@@ -14,7 +14,7 @@ export default function Contact() {
     e.preventDefault();
 
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("/api/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +78,12 @@ export default function Contact() {
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
 
-          <button type="submit" className="w-full p-3 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors">Send Message</button>
+          <button
+            type="submit"
+            className="w-full p-3 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors"
+          >
+            Send Message
+          </button>
         </form>
       </div>
     </section>
