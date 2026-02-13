@@ -30,20 +30,28 @@ function ensureArray(value: any): string[] {
 function normalizeResumeData(data: any) {
   if (!data.skills) data.skills = {};
 
-  // Normalize skills categories
+  // Normalize skills
   Object.keys(data.skills || {}).forEach((key) => {
     data.skills[key] = ensureArray(data.skills[key]);
   });
 
-  // Normalize top-level arrays
+  // Top-level arrays
   data.certifications = ensureArray(data.certifications);
   data.languages = ensureArray(data.languages);
 
-  // Normalize experience points
+  // Experience
   if (Array.isArray(data.experience)) {
     data.experience = data.experience.map((exp: any) => ({
       ...exp,
       points: ensureArray(exp.points),
+    }));
+  }
+
+  // 🔥 ADD THIS BLOCK
+  if (Array.isArray(data.projects)) {
+    data.projects = data.projects.map((proj: any) => ({
+      ...proj,
+      description: ensureArray(proj.description),
     }));
   }
 
@@ -69,16 +77,35 @@ export async function POST(req: Request) {
 
   let body = await req.json();
 
-  // 🔥 Normalize Incoming CMS Data
+  /* ----------------------------
+     Normalize Incoming CMS Data
+  ----------------------------- */
+
   body = normalizeResumeData(body);
+
+  // 🔥 Ensure Projects Description is Always Array
+  if (Array.isArray(body.projects)) {
+    body.projects = body.projects.map((proj: any) => ({
+      ...proj,
+      description: ensureArray(proj.description),
+    }));
+  }
+
+  /* ----------------------------
+     Singleton Resume Logic
+  ----------------------------- */
 
   let resume = await Resume.findOne();
 
   if (resume) {
-    resume = await Resume.findByIdAndUpdate(resume._id, body, {
-      new: true,
-      runValidators: true,
-    });
+    resume = await Resume.findByIdAndUpdate(
+      resume._id,
+      { $set: body }, // ✅ Prevents nested replacement issues
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
   } else {
     resume = await Resume.create(body);
   }

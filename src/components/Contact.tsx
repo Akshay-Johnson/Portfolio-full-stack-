@@ -12,7 +12,6 @@ export default function Contact() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     try {
       const res = await fetch("/api/messages", {
         method: "POST",
@@ -21,10 +20,11 @@ export default function Contact() {
         },
         body: JSON.stringify(form),
       });
-
       const data = await res.json();
-      alert(data.message);
-
+      if (!res.ok) {
+        alert(data.message || "Failed to send message");
+      }
+      alert(data.message || "Message sent successfully");
       setForm({
         name: "",
         email: "",
@@ -32,7 +32,8 @@ export default function Contact() {
         message: "",
       });
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      console.error("Error sending message:", error);
+      alert("An error occurred while sending the message");
     }
   }
   return (
@@ -46,13 +47,23 @@ export default function Contact() {
           onSubmit={handleSubmit}
           className="bg-white/10 backdrop-blur-lg p-8 rounded-lg shadow-lg max-w-2xl mx-auto"
         >
-          <input
-            placeholder="Name"
-            required
-            value={form.name}
-            className="w-full mb-4 p-3 rounded bg-white/20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
+          <div className="flex flex-col md:flex-row gap-4 mb-2">
+            <input
+              placeholder="Name"
+              required
+              value={form.name}
+              className="w-full mb-2 p-3 rounded bg-white/20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+
+            <input
+              placeholder="Phone"
+              required
+              value={form.phone}
+              className="w-full mb-2 p-3 rounded bg-white/20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
+          </div>
 
           <input
             placeholder="Email"
@@ -60,14 +71,6 @@ export default function Contact() {
             value={form.email}
             className="w-full mb-4 p-3 rounded bg-white/20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-
-          <input
-            placeholder="Phone"
-            required
-            value={form.phone}
-            className="w-full mb-4 p-3 rounded bg-white/20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
 
           <textarea

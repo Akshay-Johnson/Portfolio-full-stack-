@@ -31,18 +31,20 @@ const ResumeSchema = new Schema(
     ],
 
     skills: {
+      languages: [String],
       frontend: [String],
       backend: [String],
       databases: [String],
-      languages: [String],
-      concepts: [String],
-      tools: [String],
+      apiSecurity: [String],
+      cloudVirtualization: [String],
+      toolsDeployment: [String],
+      focusAreas: [String],
     },
 
     projects: [
       {
         title: String,
-        description: String,
+        description: [String],
       },
     ],
 

@@ -10,6 +10,17 @@ function safeArray(value: any): string[] {
   return [];
 }
 
+function formatSkillTitle(key: string) {
+  const map: any = {
+    apiSecurity: "APIs & Security",
+    toolsDeployment: "Tools & Deployment",
+    cloudVirtualization: "Cloud & Virtualization",
+    focusAreas: "Focus Areas",
+  };
+
+  return map[key] || key;
+}
+
 export default function Resume() {
   const [resume, setResume] = useState<any>(null);
 
@@ -40,12 +51,9 @@ export default function Resume() {
         <div className="grid md:grid-cols-2 gap-12">
           {/* LEFT */}
           <div className="space-y-6">
-
             {/* Profile */}
             <div>
-              <h2 className="text-xl font-bold">
-                {resume.profile?.name}
-              </h2>
+              <h2 className="text-xl font-bold">{resume.profile?.name}</h2>
 
               <p>{resume.profile?.phone}</p>
               <p>{resume.profile?.email}</p>
@@ -53,9 +61,7 @@ export default function Resume() {
               <p>GitHub: {resume.profile?.github}</p>
               <p>LinkedIn: {resume.profile?.linkedin}</p>
 
-              <p className="mt-3 text-white/80">
-                {resume.profile?.summary}
-              </p>
+              <p className="mt-3 text-white">{resume.profile?.summary}</p>
             </div>
 
             {/* Experience */}
@@ -68,9 +74,7 @@ export default function Resume() {
                     {exp.title} - {exp.company}
                   </p>
 
-                  <p className="text-sm text-white/80">
-                    {exp.year}
-                  </p>
+                  <p className="text-sm text-white/80">{exp.year}</p>
 
                   <ul className="list-disc pl-6">
                     {safeArray(exp.points).map((p: string, idx: number) => (
@@ -87,9 +91,12 @@ export default function Resume() {
 
               {safeArray(resume.education).map((edu: any, i: number) => (
                 <div key={i}>
-                  <p className="font-semibold">{edu.degree}</p>
-                  <p>{edu.institute}</p>
-                  <p>{edu.year}</p>
+                  <ul className="list-disc pl-6">
+                    <li className="font-semibold py-2">{edu.degree}</li>
+                    <p>
+                      {edu.institute} - {edu.year}
+                    </p>
+                  </ul>
                 </div>
               ))}
             </div>
@@ -97,29 +104,40 @@ export default function Resume() {
 
           {/* RIGHT */}
           <div className="space-y-6">
-
             {/* Skills */}
             <div>
-              <h3 className="text-xl font-bold">Skills</h3>
+              <h3 className="text-xl font-bold mb-2">Skills</h3>
 
-              {Object.entries(resume.skills || {}).map(
-                ([key, value]: any) => (
-                  <p key={key}>
-                    <strong>{key}:</strong>{" "}
-                    {safeArray(value).join(", ")}
-                  </p>
-                )
+              {resume.skills && Object.keys(resume.skills).length > 0 ? (
+                <ul className="list-disc pl-6 space-y-2">
+                  {Object.entries(resume.skills).map(([key, value]: any) => (
+                    <li key={key}>
+                      <strong className="capitalize">
+                        {formatSkillTitle(key)}:
+                      </strong>{" "}
+                      {safeArray(value).join(", ")}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm opacity-70">No skills added</p>
               )}
             </div>
 
             {/* Projects */}
             <div>
               <h3 className="text-xl font-bold">Projects</h3>
-
               {safeArray(resume.projects).map((proj: any, i: number) => (
                 <div key={i} className="mb-4">
                   <p className="font-semibold">{proj.title}</p>
-                  <p>{proj.description}</p>
+
+                  <ul className="list-disc pl-6 mt-1 space-y-1">
+                    {safeArray(proj.description).map(
+                      (point: string, idx: number) => (
+                        <li key={idx}>{point}</li>
+                      ),
+                    )}
+                  </ul>
 
                   {proj.link && (
                     <a
@@ -143,24 +161,23 @@ export default function Resume() {
             <div>
               <h3 className="text-xl font-bold">Certifications</h3>
 
-              {safeArray(resume.certifications).map(
-                (c: string, i: number) => (
-                  <p key={i}>{c}</p>
-                )
-              )}
+              {safeArray(resume.certifications).map((c: string, i: number) => (
+                <ul className="list-disc pl-6">
+                  <li key={i}>{c}</li>
+                </ul>
+              ))}
             </div>
 
             {/* Languages */}
             <div>
               <h3 className="text-xl font-bold">Languages</h3>
 
-              {safeArray(resume.languages).map(
-                (l: string, i: number) => (
-                  <p key={i}>{l}</p>
-                )
-              )}
+              {safeArray(resume.languages).map((l: string, i: number) => (
+                <ul className="list-disc pl-6">
+                  <li key={i}>{l}</li>
+                </ul>
+              ))}
             </div>
-
           </div>
         </div>
       </div>

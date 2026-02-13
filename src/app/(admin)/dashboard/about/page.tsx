@@ -1,5 +1,6 @@
 "use client";
 
+import RightLabelInput from "@/components/RighntLabelInput";
 import { useEffect, useState } from "react";
 
 type AboutData = {
@@ -90,36 +91,31 @@ export default function AboutCMS() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">About CMS</h1>
-
-      <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 rounded-2xl shadow-xl space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-2xl  backdrop-blur-xl  p-6 rounded-2xl shadow-xl space-y-6">
         {/* BASIC DETAILS */}
         <div className="grid md:grid-cols-2 gap-4">
           <div className="flex flex-col">
-            <label className="text-sm mb-1">Name</label>
-            <input
+            <RightLabelInput
+              label="-Name"
               value={data.name}
               onChange={(e) => setData({ ...data, name: e.target.value })}
-              className="input-style"
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm mb-1">Location</label>
-            <input
+            <RightLabelInput
+              label="-Location"
               value={data.location}
               onChange={(e) => setData({ ...data, location: e.target.value })}
-              className="input-style"
             />
           </div>
 
-          <div className="flex flex-col md:col-span-2">
-            <label className="text-sm mb-1">Email</label>
-            <input
+          <div className="flex flex-col md:col-span-1">
+            <RightLabelInput
+              label="-Email"
               value={data.email}
               onChange={(e) => setData({ ...data, email: e.target.value })}
-              className="input-style"
             />
           </div>
         </div>
@@ -130,7 +126,7 @@ export default function AboutCMS() {
           <textarea
             value={data.bio}
             onChange={(e) => setData({ ...data, bio: e.target.value })}
-            className="input-style h-28"
+            className="input-style h-28 border border-gray-600 p-2 rounded"
           />
         </div>
 
@@ -141,7 +137,7 @@ export default function AboutCMS() {
           <input
             type="file"
             disabled={uploading}
-            className="file-style"
+            className="file-style border border-gray-600 p-2 rounded min-w-12 max-w-max text-sm cursor-pointer"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) uploadImage(file);
@@ -165,15 +161,16 @@ export default function AboutCMS() {
           <label className="text-sm">Skills</label>
 
           <div className="flex gap-3 mt-2">
-            <input
+            <RightLabelInput
+              label="-Add Skill"
               value={skillsInput}
               onChange={(e) => setSkillsInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addSkill()}
-              placeholder="Add skill"
-              className="input-style flex-1"
             />
 
-            <button onClick={addSkill} className="primary-btn">
+            <button
+              onClick={addSkill}
+              className="primary-btn bg-blue-600 rounded px-4 py-2 text-sm cursor-pointer"
+            >
               Add
             </button>
           </div>
@@ -189,7 +186,7 @@ export default function AboutCMS() {
 
                 <button
                   onClick={() => removeSkill(i)}
-                  className="text-red-400 hover:text-red-600 text-xs font-bold"
+                  className="text-red-400 hover:text-red-600 text-xs font-bold cursor-pointer"
                 >
                   ✕
                 </button>
@@ -197,11 +194,15 @@ export default function AboutCMS() {
             ))}
           </div>
         </div>
-
-        {/* SAVE BUTTON */}
-        <button onClick={saveAbout} className="primary-btn w-full py-3 text-lg">
-          Save About
-        </button>
+        <div className="flex justify-between">
+          {/* SAVE BUTTON */}
+          <button
+            onClick={saveAbout}
+            className="primary-btn mx-auto px-2 py-2 text-lg bg-green-600 rounded text-lg"
+          >
+            Save About
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import RightLabelInput from "@/components/RighntLabelInput";
 import { useEffect, useState } from "react";
 
 type Project = {
@@ -43,10 +44,10 @@ export default function ProjectsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-      if (uploading) {
-        alert("Please wait for image upload");
-        return;
-      }
+    if (uploading) {
+      alert("Please wait for image upload");
+      return;
+    }
 
     const payload = {
       ...form,
@@ -130,94 +131,101 @@ export default function ProjectsPage() {
 
   // ================= UI =================
   return (
-    <div>
-      <h1 className="text-3xl mb-6">Project CMS</h1>
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div>
+        <form onSubmit={handleSubmit} className="space-y-4 mb-10">
+          <RightLabelInput
+            label="Title"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
 
-      <form onSubmit={handleSubmit} className="space-y-4 mb-10">
-        <input
-          placeholder="Title"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-          className="border p-2 w-full"
-          required
-        />
+          <RightLabelInput
+            label="Description"
+            multiline
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
 
-        <textarea
-          placeholder="Description"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          className="border p-2 w-full"
-          required
-        />
+          <RightLabelInput
+            label="Tech stack (comma separated)"
+            value={form.techStack}
+            onChange={(e) => setForm({ ...form, techStack: e.target.value })}
+          />
 
-        <input
-          placeholder="Tech stack (comma separated)"
-          value={form.techStack}
-          onChange={(e) => setForm({ ...form, techStack: e.target.value })}
-          className="border p-2 w-full"
-        />
+          <RightLabelInput
+            label="Live URL"
+            value={form.liveUrl}
+            onChange={(e) => setForm({ ...form, liveUrl: e.target.value })}
+          />
 
-        <input
-          placeholder="Live URL"
-          value={form.liveUrl}
-          onChange={(e) => setForm({ ...form, liveUrl: e.target.value })}
-          className="border p-2 w-full"
-        />
+          <RightLabelInput
+            label="GitHub URL"
+            value={form.githubUrl}
+            onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
+          />
 
-        <input
-          placeholder="GitHub URL"
-          value={form.githubUrl}
-          onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
-          className="border p-2 w-full"
-        />
+          {/* IMAGE UPLOAD */}
+          <div className="flex items-center justify-start gap-4">
+            {/* File Input */}
+            <input
+              type="file"
+              className="file-style border border-gray-600 p-2 rounded text-sm cursor-pointer"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) uploadImage(file);
+              }}
+            />
 
-        {/* IMAGE UPLOAD */}
-        <input
-          type="file"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) uploadImage(file);
-          }}
-        />
+            {/* Preview */}
+            {form.image && (
+              <img
+                src={form.image}
+                className="w-32 h-16 object-cover rounded border border-gray-600"
+              />
+            )}
+          </div>
 
-        {/* Preview */}
-        {form.image && <img src={form.image} className="w-40 rounded mt-2" />}
+          <div className="flex gap-2 justify-center">
+            <button className="bg-blue-500 px-4 py-2 rounded text-white mt-2 mx-auto">
+              {editingId ? "Update Project" : "Add Project"}
+            </button>
+          </div>
+        </form>
 
-        <button className="bg-blue-500 px-4 py-2 rounded text-white">
-          {editingId ? "Update Project" : "Add Project"}
-        </button>
-      </form>
+        {/* PROJECT LIST */}
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((p) => (
+              <div key={p._id} className="border border-gray-600 p-4 rounded">
+                <p className="font-bold">{p.title}</p>
 
-      {/* PROJECT LIST */}
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="space-y-4">
-          {projects.map((p) => (
-            <div key={p._id} className="border p-4 rounded">
-              <p className="font-bold">{p.title}</p>
+                {p.image && (
+                  <img src={p.image} className="w-40 mt-2 rounded mx-auto" />
+                )}
 
-              {p.image && <img src={p.image} className="w-40 mt-2 rounded" />}
+                <div className="flex gap-2 mt-4 mx-auto justify-center">
+                  <button
+                    onClick={() => handleEdit(p)}
+                    className="bg-yellow-500 px-3 py-1 rounded text-white"
+                  >
+                    Edit
+                  </button>
 
-              <div className="flex gap-2 mt-2">
-                <button
-                  onClick={() => handleEdit(p)}
-                  className="bg-yellow-500 px-3 py-1 rounded text-white"
-                >
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => deleteProject(p._id)}
-                  className="bg-red-500 px-3 py-1 rounded text-white"
-                >
-                  Delete
-                </button>
+                  <button
+                    onClick={() => deleteProject(p._id)}
+                    className="bg-red-500 px-3 py-1 rounded text-white"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
