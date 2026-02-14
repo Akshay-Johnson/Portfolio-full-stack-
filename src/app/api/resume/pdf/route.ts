@@ -5,16 +5,19 @@ import { connectDB } from "@/lib/db";
 import Resume from "@/lib/models/resume";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
     await connectDB();
 
-    const resume = await Resume.findOne();
+    const resumeDoc = await Resume.findOne().lean(); // ⭐ convert to plain JSON
 
-    if (!resume) {
+    if (!resumeDoc || Array.isArray(resumeDoc)) {
       return NextResponse.json({ message: "No resume found" }, { status: 404 });
     }
+
+    const resume = resumeDoc as any;
     const html = `
 <html>
 <head>
@@ -139,18 +142,19 @@ export async function GET() {
 <div class="section">
   <div class="section-title">PROJECTS</div>
 
-  ${(resume.projects || [])
-    .map(
-      (proj: any) => `
-      <div class="sub-title">${proj.title}</div>
+ ${(resume.projects || [])
+   .map(
+     (proj: any) => `
+    <div class="sub-title">${proj.title ?? ""}</div>
 
-      <ul>
-        <li>${proj.description}</li>
-        ${proj.link ? `<li>${proj.link}</li>` : ""}
-      </ul>
-    `,
-    )
-    .join("")}
+    <ul>
+      ${(proj.description || []).map((d: string) => `<li>${d}</li>`).join("")}
+      ${proj.link ? `<li>${proj.link}</li>` : ""}
+    </ul>
+  `,
+   )
+   .join("")}
+
 </div>
 
 <div class="section">
@@ -194,36 +198,49 @@ export async function GET() {
 `;
     chromium.setGraphicsMode = false;
 
+    const executablePath = await chromium.executablePath();
+
+    if (!executablePath) {
+      throw new Error("Chromium path missing");
+    }
+
     const browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath(),
+      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath,
       headless: true,
     });
 
     const page = await browser.newPage();
 
+    // ⭐ viewport improves rendering
+    await page.setViewport({ width: 1200, height: 1600 });
+
     await page.setContent(html, {
-      waitUntil: "networkidle0",
+      waitUntil: "domcontentloaded",
     });
 
-    const pdfBuffer = await page.pdf({
+    // ⭐ wait fonts
+    await page.evaluateHandle("document.fonts.ready");
+
+    const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
     });
 
     await browser.close();
 
-    return new NextResponse(Buffer.from(pdfBuffer), {
+    return new NextResponse(Buffer.from(pdf), {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": "attachment; filename=resume.pdf",
       },
     });
-  } catch (error) {
-    console.error("PDF GENERATION ERROR:", error);
+  } catch (error: any) {
+    console.error("PDF ERROR:", error?.message);
+    console.error(error?.stack);
 
     return NextResponse.json(
-      { message: "PDF generation failed" },
+      { message: error?.message || "PDF generation failed" },
       { status: 500 },
     );
   }
