@@ -7,17 +7,15 @@ import Resume from "@/lib/models/resume";
 export const runtime = "nodejs";
 
 export async function GET() {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const resume = await Resume.findOne();
+    const resume = await Resume.findOne();
 
-  if (!resume) {
-    return NextResponse.json({ message: "No resume found" });
-  }
-
-  // Convert Resume To HTML
-
-  const html = `
+    if (!resume) {
+      return NextResponse.json({ message: "No resume found" }, { status: 404 });
+    }
+    const html = `
 <html>
 <head>
 <style>
@@ -194,26 +192,39 @@ export async function GET() {
 </body>
 </html>
 `;
+    chromium.setGraphicsMode = false;
 
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
-    headless: true,
-  });
-  const page = await browser.newPage();
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: true,
+    });
 
-  await page.setContent(html);
+    const page = await browser.newPage();
 
-  const pdfBuffer = await page.pdf({
-    format: "A4",
-  });
+    await page.setContent(html, {
+      waitUntil: "networkidle0",
+    });
 
-  await browser.close();
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+    });
 
-  return new NextResponse(Buffer.from(pdfBuffer), {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=resume.pdf",
-    },
-  });
+    await browser.close();
+
+    return new NextResponse(Buffer.from(pdfBuffer), {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "attachment; filename=resume.pdf",
+      },
+    });
+  } catch (error) {
+    console.error("PDF GENERATION ERROR:", error);
+
+    return NextResponse.json(
+      { message: "PDF generation failed" },
+      { status: 500 },
+    );
+  }
 }
