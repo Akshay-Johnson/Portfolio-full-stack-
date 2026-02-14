@@ -1,7 +1,10 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Resume from "@/lib/models/resume";
+
+export const runtime = "nodejs";
 
 export async function GET() {
   await connectDB();
@@ -192,7 +195,11 @@ export async function GET() {
 </html>
 `;
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
+    headless: true,
+  });
   const page = await browser.newPage();
 
   await page.setContent(html);
