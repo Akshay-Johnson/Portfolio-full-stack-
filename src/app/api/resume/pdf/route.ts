@@ -8,10 +8,12 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  let browser: any = null;
+
   try {
     await connectDB();
 
-    const resumeDoc = await Resume.findOne().lean(); // ⭐ convert to plain JSON
+    const resumeDoc = await Resume.findOne().lean();
 
     if (!resumeDoc || Array.isArray(resumeDoc)) {
       return NextResponse.json({ message: "No resume found" }, { status: 404 });
@@ -196,41 +198,50 @@ export async function GET() {
 </body>
 </html>
 `;
-    chromium.setGraphicsMode = true;
 
-    const executablePath = await chromium.executablePath(
-      process.env.CHROMIUM_PATH,
-    );
+    const isVercel = !!process.env.VERCEL;
 
-    if (!executablePath) {
-      throw new Error("Chromium path missing");
+    // ===== Browser Launch =====
+    if (isVercel) {
+      chromium.setGraphicsMode = true;
+
+      const executablePath = await chromium.executablePath();
+
+      browser = await puppeteer.launch({
+        args: chromium.args,
+        executablePath,
+        headless: true,
+      });
+    } else {
+      // ⭐ Windows / Local Safe Launch
+      const puppeteerFull = await import("puppeteer");
+
+      browser = await puppeteerFull.default.launch({
+        headless: true,
+        timeout: 60000,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+        ],
+        userDataDir: undefined,
+      });
     }
-
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: { width: 1200, height: 1600 },
-      executablePath: executablePath,
-      headless: true,
-    });
 
     const page = await browser.newPage();
 
-    // ⭐ viewport improves rendering
     await page.setViewport({ width: 1200, height: 1600 });
 
-    await page.setContent(html, {
-      waitUntil: "domcontentloaded",
-    });
+    await page.setContent(html, { waitUntil: "domcontentloaded" });
 
-    // ⭐ wait fonts
-    await page.evaluateHandle("document.fonts.ready");
+    await page.evaluate(() => document.fonts.ready);
 
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
+      preferCSSPageSize: true,
     });
-
-    await browser.close();
 
     return new NextResponse(Buffer.from(pdf), {
       headers: {
@@ -246,5 +257,7 @@ export async function GET() {
       { message: error?.message || "PDF generation failed" },
       { status: 500 },
     );
+  } finally {
+    if (browser) await browser.close();
   }
 }

@@ -9,6 +9,7 @@ const nextConfig = {
     ],
   },
 
+  // ⭐ Correct place for external server packages (Next 16+)
   serverExternalPackages: ["puppeteer-core", "@sparticuz/chromium"],
 };
 
