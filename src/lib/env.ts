@@ -1,4 +1,6 @@
 import { z } from "zod";
+import "server-only";
+
 
 const envSchema = z.object({
   MONGODB_URI: z.string().min(1, "MONGODB_URI is required"),
