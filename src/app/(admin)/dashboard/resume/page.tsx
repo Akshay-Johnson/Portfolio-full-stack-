@@ -16,6 +16,18 @@ const tabs = [
 
 export default function ResumeCMS() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [skillInput, setSkillInput] = useState<{ [key: string]: string }>({});
+
+  const [selectedExperience, setSelectedExperience] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [selectedEducation, setSelectedEducation] = useState<number | null>(
+    null,
+  );
+  const [isEducationModalOpen, setIsEducationModalOpen] = useState(false);
+
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   const [data, setData] = useState<any>({
     profile: {},
@@ -43,6 +55,36 @@ export default function ResumeCMS() {
     alert("Resume saved successfully!");
   }
 
+  function openExperienceModal(index: number) {
+    setSelectedExperience(index);
+    setIsModalOpen(true);
+  }
+
+  function closeModal() {
+    setSelectedExperience(null);
+    setIsModalOpen(false);
+  }
+
+  function openEducationModal(index: number) {
+    setSelectedEducation(index);
+    setIsEducationModalOpen(true);
+  }
+
+  function closeEducationModal() {
+    setSelectedEducation(null);
+    setIsEducationModalOpen(false);
+  }
+
+  function openProjectModal(index: number) {
+    setSelectedProject(index);
+    setIsProjectModalOpen(true);
+  }
+
+  function closeProjectModal() {
+    setSelectedProject(null);
+    setIsProjectModalOpen(false);
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <button
@@ -54,18 +96,22 @@ export default function ResumeCMS() {
       </button>
       <div className="w-full-max-w-2xl  backdrop-blur-lg rounded p-6  shadow-xl space-y-6">
         {/* Tabs */}
-        <div className="flex flex-wrap gap-3 mb-6 font-black  p-3 rounded">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 cursor-pointer rounded capitalize ${
-                activeTab === tab ? "bg-blue-500 text-white" : "bg-white/20 "
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+        <div className="sticky top-0 z-40 backdrop-blur-xl bg-black/60 border-b border-white/10 p-3 mb-6 rounded">
+          <div className="flex flex-wrap gap-3 font-black">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded capitalize transition ${
+                  activeTab === tab
+                    ? "bg-blue-500 text-white"
+                    : "bg-white/20 hover:bg-white/30"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ================= PROFILE ================= */}
@@ -186,192 +232,83 @@ export default function ResumeCMS() {
 
         {/* ================= EXPERIENCE ================= */}
         {activeTab === "experience" && (
-          <div className="space-y-6 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {data.experience.map((exp: any, i: number) => (
-              <div key={i} className=" p-4 rounded space-y-6 ">
-                <RightLabelInput
-                  label="-Job Title"
-                  value={exp.title}
-                  onChange={(e) => {
-                    const updated = [...data.experience];
-                    updated[i].title = e.target.value;
-                    setData({ ...data, experience: updated });
-                  }}
-                />
-                <div className="flex justify-between gap-6">
-                  <RightLabelInput
-                    label="-Company"
-                    value={exp.company}
-                    onChange={(e) => {
-                      const updated = [...data.experience];
-                      updated[i].company = e.target.value;
-                      setData({ ...data, experience: updated });
-                    }}
-                  />
-
-                  <RightLabelInput
-                    label="-Year"
-                    value={exp.year}
-                    onChange={(e) => {
-                      const updated = [...data.experience];
-                      updated[i].year = e.target.value;
-                      setData({ ...data, experience: updated });
-                    }}
-                  />
-                </div>
-
-                {/* Points */}
-                <div className="space-y-4 ">
-                  <p className="font-semibold">
-                    Points - Achivements/Responsibilities
-                  </p>
-
-                  {(exp.points || []).map((p: string, pI: number) => (
-                    <div key={pI} className=" relative flex gap-2">
-                      <input
-                        key={pI}
-                        className="border border-gray-600 p-2 w-full rounded"
-                        value={p}
-                        placeholder="Achievement / Responsibility"
-                        onChange={(e) => {
-                          const updated = [...data.experience];
-                          updated[i].points[pI] = e.target.value;
-                          setData({ ...data, experience: updated });
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updated = [...data.experience];
-                          updated[i].points = updated[i].points.filter(
-                            (_: string, index: number) => index !== pI,
-                          );
-                          setData({ ...data, experience: updated });
-                        }}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-red-500 font-bold cursor-pointer"
-                      >
-                        x
-                      </button>
-                    </div>
-                  ))}
-                  <div className="flex gap-4 space-x-4 ">
-                    {/* Add Point */}
-                    <button
-                      onClick={() => {
-                        const updated = [...data.experience];
-                        if (!updated[i].points) updated[i].points = [];
-                        updated[i].points.push("");
-                        setData({ ...data, experience: updated });
-                      }}
-                      className="bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center cursor-pointer "
-                    >
-                      Add Point
-                    </button>
-
-                    {/* Delete Experience */}
-                    <button
-                      onClick={() => {
-                        const updated = data.experience.filter(
-                          (_: any, index: number) => index !== i,
-                        );
-                        setData({ ...data, experience: updated });
-                      }}
-                      className="bg-red-500 text-white px-4 py-2 rounded flex items-center justify-center cursor-pointer "
-                    >
-                      Delete Experience
-                    </button>
-                  </div>
-                </div>
+              <div
+                key={i}
+                className="bg-black/30 border border-white/10 rounded-xl p-5 hover:border-blue-400 transition"
+              >
+                <h3 className="text-lg font-semibold">{exp.title}</h3>
+                <p className="text-sm text-gray-400">{exp.company}</p>
+                <button
+                  onClick={() => openExperienceModal(i)}
+                  className="mt-4 bg-blue-500 px-3 py-1 rounded"
+                >
+                  Edit
+                </button>
               </div>
             ))}
+            {/* Add Experience Button */}
+            <button
+              onClick={() => {
+                const newIndex = data.experience.length;
 
-            {/* Add Experience */}
-            <div className="flex justify-center">
-              <button
-                onClick={() =>
-                  setData({
-                    ...data,
-                    experience: [
-                      ...data.experience,
-                      { title: "", company: "", year: "", points: [""] },
-                    ],
-                  })
-                }
-                className="m-auto bg-green-500 text-white px-4 py-2 rounded cursor-pointer "
-              >
-                Add Experience
-              </button>
-            </div>
+                setData({
+                  ...data,
+                  experience: [
+                    ...data.experience,
+                    { title: "", company: "", year: "", points: [""] },
+                  ],
+                });
+
+                openExperienceModal(newIndex);
+              }}
+              className="border border-dashed border-gray-500 rounded-xl p-6 hover:border-blue-400"
+            >
+              Add Experience
+            </button>
           </div>
         )}
 
         {/* ================= EDUCATION ================= */}
 
         {activeTab === "education" && (
-          <div className="space-y-6">
-            {data.education?.map((edu: any, i: number) => (
-              <div key={i} className=" p-4 rounded space-y-4 flex flex-col">
-                <div className="flex justify-between gap-6">
-                  <RightLabelInput
-                    label="-Degree"
-                    value={edu.degree}
-                    onChange={(e) => {
-                      const updated = [...data.education];
-                      updated[i].degree = e.target.value;
-                      setData({ ...data, education: updated });
-                    }}
-                  />
-
-                  <RightLabelInput
-                    label="-Year"
-                    value={edu.year}
-                    onChange={(e) => {
-                      const updated = [...data.education];
-                      updated[i].year = e.target.value;
-                      setData({ ...data, education: updated });
-                    }}
-                  />
-                </div>
-
-                <RightLabelInput
-                  label="-Institute"
-                  value={edu.institute}
-                  onChange={(e) => {
-                    const updated = [...data.education];
-                    updated[i].institute = e.target.value;
-                    setData({ ...data, education: updated });
-                  }}
-                />
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {data.education.map((edu: any, i: number) => (
+              <div
+                key={i}
+                className="bg-black/30 border border-white/10 rounded-xl p-5 hover:border-blue-400 transition"
+              >
+                <h3 className="text-lg font-semibold">{edu.degree}</h3>
+                <p className="text-sm text-gray-400">{edu.institute}</p>
 
                 <button
-                  onClick={() => {
-                    const updated = data.education.filter(
-                      (_: any, index: number) => i !== index,
-                    );
-                    setData({ ...data, education: updated });
-                  }}
-                  className="bg-red-500 px-3 py-1 rounded"
+                  onClick={() => openEducationModal(i)}
+                  className="mt-4 bg-blue-500 px-3 py-1 rounded"
                 >
-                  Delete Education
+                  Edit
                 </button>
               </div>
             ))}
-            <div className="flex justify-center">
-              <button
-                onClick={() => {
-                  setData({
-                    ...data,
-                    education: [
-                      ...data.education,
-                      { degree: "", institute: "", year: "" },
-                    ],
-                  });
-                }}
-                className="bg-green-500 text-white px-4 py-2 rounded mx-auto flex items-center justify-center cursor-pointer "
-              >
-                Add Education
-              </button>
-            </div>
+
+            <button
+              onClick={() => {
+                const newIndex = data.education.length;
+
+                setData({
+                  ...data,
+                  education: [
+                    ...data.education,
+                    { degree: "", institute: "", year: "" },
+                  ],
+                });
+
+                openEducationModal(newIndex);
+              }}
+              className="border border-dashed border-gray-500 rounded-xl p-6 hover:border-blue-400"
+            >
+              Add Education
+            </button>
           </div>
         )}
 
@@ -380,43 +317,67 @@ export default function ResumeCMS() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(data.skills || {}).map(
               ([category, values]: any) => (
-                <div key={category} className=" p-4 rounded space-y-3">
-                  <h3 className="font-bold text-lg">{category}</h3>
-                  {values.map((skill: string, i: number) => (
-                    <div key={i} className="flex gap-2">
-                      <input
-                        value={skill}
-                        onChange={(e) => {
-                          const updated = { ...data.skills };
-                          updated[category][i] = e.target.value;
-                          setData({ ...data, skills: updated });
-                        }}
-                        className="w-32 border-1 rounded p-1"
-                      />
-                      <button
-                        onClick={() => {
-                          const updated = { ...data.skills };
-                          updated[category] = updated[category].filter(
-                            (_: string, index: number) => index !== i,
-                          );
-                          setData({ ...data, skills: updated });
-                        }}
-                        className="bg-red-500 text-white px-2 py-1 rounded"
+                <div
+                  key={category}
+                  className=" p-4 rounded space-y-4 border bg-black/20"
+                >
+                  <h3 className="font-bold text-lg capitalize">{category}</h3>
+
+                  <div className="flex gap-2">
+                    <input
+                      value={skillInput[category] || ""}
+                      onChange={(e) => {
+                        setSkillInput({
+                          ...skillInput,
+                          [category]: e.target.value,
+                        });
+                      }}
+                      placeholder="Add Skill"
+                      className="w-32 border-1 rounded p-1"
+                    />
+
+                    <button
+                      onClick={() => {
+                        if (!skillInput[category]?.trim()) return;
+
+                        const updated = { ...data.skills };
+                        updated[category] = [
+                          ...updated[category],
+                          skillInput[category]?.trim(),
+                        ];
+                        setData({ ...data, skills: updated });
+
+                        setSkillInput({ ...skillInput, [category]: "" });
+                      }}
+                      className="bg-red-500 text-white px-2 py-1 rounded"
+                    >
+                      Add Skill
+                    </button>
+                  </div>
+                  {/* Skill Chips */}
+                  <div className="flex flex-wrap gap-2">
+                    {values.map((skill: string, i: number) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-sm"
                       >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    onClick={() => {
-                      const updated = { ...data.skills };
-                      updated[category].push("");
-                      setData({ ...data, skills: updated });
-                    }}
-                    className="bg-green-500 text-white px-4 py-2 rounded"
-                  >
-                    Add Skill
-                  </button>
+                        <span>{skill}</span>
+
+                        <button
+                          onClick={() => {
+                            const updated = { ...data.skills };
+                            updated[category] = updated[category].filter(
+                              (_: string, index: number) => index !== i,
+                            );
+                            setData({ ...data, skills: updated });
+                          }}
+                          className="text-red-400 hover:text-red-500 text-xs font-bold"
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ),
             )}
@@ -425,130 +386,41 @@ export default function ResumeCMS() {
 
         {/* Projects */}
         {activeTab === "projects" && (
-          <div className="space-y-6">
-            {data.projects?.map((proj: any, i: number) => {
-              const description = Array.isArray(proj.description)
-                ? proj.description
-                : [];
-
-              return (
-                <div
-                  key={i}
-                  className="p-4 rounded space-y-4 border border-gray-700"
-                >
-                  {/* Title */}
-                  <RightLabelInput
-                    label="- Project Title"
-                    value={proj.title || ""}
-                    onChange={(e) => {
-                      const updated = [...data.projects];
-                      updated[i] = { ...updated[i], title: e.target.value };
-
-                      setData({ ...data, projects: updated });
-                    }}
-                  />
-
-                  {/* Description Bullet Points */}
-                  <div className="space-y-2">
-                    <label className="font-semibold">Description Points</label>
-
-                    {description.map((point: string, j: number) => (
-                      <div key={j} className="flex gap-2 items-center">
-                        <input
-                          type="text"
-                          value={point}
-                          className="border border-gray-600 p-2 rounded w-full"
-                          placeholder="Enter bullet point"
-                          onChange={(e) => {
-                            const updated = [...data.projects];
-                            const updatedDesc = [...description];
-                            updatedDesc[j] = e.target.value;
-
-                            updated[i] = {
-                              ...updated[i],
-                              description: updatedDesc,
-                            };
-
-                            setData({ ...data, projects: updated });
-                          }}
-                        />
-
-                        <button
-                          onClick={() => {
-                            const updated = [...data.projects];
-                            const updatedDesc = description.filter(
-                              (_: any, index: number) => index !== j,
-                            );
-
-                            updated[i] = {
-                              ...updated[i],
-                              description: updatedDesc,
-                            };
-
-                            setData({ ...data, projects: updated });
-                          }}
-                          className="bg-red-500 px-2 py-1 rounded text-white"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-
-                    {/* Add Bullet */}
-                    <button
-                      onClick={() => {
-                        const updated = [...data.projects];
-
-                        updated[i] = {
-                          ...updated[i],
-                          description: [...description, ""],
-                        };
-
-                        setData({ ...data, projects: updated });
-                      }}
-                      className="bg-blue-500 text-white px-3 py-1 rounded"
-                    >
-                      + Add Bullet Point
-                    </button>
-                  </div>
-
-                  {/* Delete Project */}
-                  <button
-                    onClick={() => {
-                      const updated = data.projects.filter(
-                        (_: any, index: number) => index !== i,
-                      );
-
-                      setData({ ...data, projects: updated });
-                    }}
-                    className="bg-red-600 text-white px-4 py-2 rounded"
-                  >
-                    Delete Project
-                  </button>
-                </div>
-              );
-            })}
-
-            {/* Add Project */}
-            <div className="flex justify-center">
-              <button
-                onClick={() =>
-                  setData({
-                    ...data,
-                    projects: [
-                      ...data.projects,
-                      {
-                        title: "",
-                        description: [""], // safe default
-                      },
-                    ],
-                  })
-                }
-                className="bg-green-500 text-white px-4 py-2 rounded"
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {data.projects.map((proj: any, i: number) => (
+              <div
+                key={i}
+                className="bg-black/30 border border-white/10 rounded-xl p-5 hover:border-blue-400 transition"
               >
-                Add Project
-              </button>
-            </div>
+                <h3 className="text-lg font-semibold">{proj.title}</h3>
+
+                <button
+                  onClick={() => openProjectModal(i)}
+                  className="mt-4 bg-blue-500 px-3 py-1 rounded"
+                >
+                  Edit
+                </button>
+              </div>
+            ))}
+
+            <button
+              onClick={() => {
+                const newIndex = data.projects.length;
+
+                setData({
+                  ...data,
+                  projects: [
+                    ...data.projects,
+                    { title: "", description: [""] },
+                  ],
+                });
+
+                openProjectModal(newIndex);
+              }}
+              className="border border-dashed border-gray-500 rounded-xl p-6 hover:border-blue-400"
+            >
+              Add Project
+            </button>
           </div>
         )}
 
@@ -603,53 +475,315 @@ export default function ResumeCMS() {
 
         {/* Languages */}
         {activeTab === "languages" && (
-          <div className="space-y-3">
-            {data.languages?.map((l: string, i: number) => (
-              <div key={i} className="flex gap-2">
-                <input
-                  key={i}
-                  value={l}
-                  onChange={(e) => {
-                    const updated = [...data.languages];
-                    updated[i] = e.target.value;
-                    setData({
-                      ...data,
-                      languages: updated,
-                    });
-                  }}
-                  className="w-32 border border-gray-600 rounded p-1"
-                />
+          <div className="space-y-4 flex flex-col items-center">
+            {/* Input + Add */}
+            <div className="flex gap-2">
+              <input
+                value={skillInput.languages || ""}
+                onChange={(e) =>
+                  setSkillInput({
+                    ...skillInput,
+                    languages: e.target.value,
+                  })
+                }
+                placeholder="Add Language"
+                className="w-40 border border-gray-600 rounded p-2"
+              />
 
-                <button
-                  onClick={() => {
-                    const updated = data.languages.filter(
-                      (_: string, index: number) => index !== i,
-                    );
-                    setData({
-                      ...data,
-                      languages: updated,
-                    });
-                  }}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
+              <button
+                onClick={() => {
+                  if (!skillInput.languages?.trim()) return;
+
+                  setData({
+                    ...data,
+                    languages: [...data.languages, skillInput.languages.trim()],
+                  });
+
+                  setSkillInput({
+                    ...skillInput,
+                    languages: "",
+                  });
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Add
+              </button>
+            </div>
+
+            {/* Language Chips */}
+            <div className="flex flex-wrap gap-2">
+              {data.languages?.map((lang: string, i: number) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-sm"
                 >
-                  Delete
-                </button>
-              </div>
-            ))}
-            <button
-              onClick={() =>
-                setData({
-                  ...data,
-                  languages: [...data.languages, ""],
-                })
-              }
-              className="bg-blue-500 text-white px-2 py-1 rounded"
-            >
-              Add
-            </button>
+                  <span>{lang}</span>
+
+                  <button
+                    onClick={() => {
+                      const updated = data.languages.filter(
+                        (_: string, index: number) => index !== i,
+                      );
+
+                      setData({
+                        ...data,
+                        languages: updated,
+                      });
+                    }}
+                    className="text-red-400 hover:text-red-500 text-xs font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
+      {isModalOpen && selectedExperience !== null && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-900 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between mb-4">
+              <h2 className="text-xl font-semibold">Edit Experience</h2>
+              <button onClick={closeModal} className="text-red-400">
+                ✕
+              </button>
+            </div>
+
+            {(() => {
+              const i = selectedExperience;
+              const exp = data.experience?.[i];
+
+              if (!exp) return null;
+
+              return (
+                <div className="space-y-4">
+                  <RightLabelInput
+                    label="-Job Title"
+                    value={exp.title}
+                    onChange={(e) => {
+                      const updated = [...data.experience];
+                      updated[i].title = e.target.value;
+                      setData({ ...data, experience: updated });
+                    }}
+                  />
+
+                  <div className="flex gap-4">
+                    <RightLabelInput
+                      label="-Company"
+                      value={exp.company}
+                      onChange={(e) => {
+                        const updated = [...data.experience];
+                        updated[i].company = e.target.value;
+                        setData({ ...data, experience: updated });
+                      }}
+                    />
+
+                    <RightLabelInput
+                      label="-Year"
+                      value={exp.year}
+                      onChange={(e) => {
+                        const updated = [...data.experience];
+                        updated[i].year = e.target.value;
+                        setData({ ...data, experience: updated });
+                      }}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="font-semibold">Responsibilities</p>
+
+                    {(exp.points || []).map((p: string, pI: number) => (
+                      <div key={pI} className="flex gap-2">
+                        <input
+                          value={p}
+                          className="w-full border rounded p-2 bg-black/40"
+                          onChange={(e) => {
+                            const updated = [...data.experience];
+                            updated[i].points[pI] = e.target.value;
+                            setData({ ...data, experience: updated });
+                          }}
+                        />
+
+                        <button
+                          onClick={() => {
+                            const updated = [...data.experience];
+                            updated[i].points = updated[i].points.filter(
+                              (_: string, index: number) => index !== pI,
+                            );
+                            setData({ ...data, experience: updated });
+                          }}
+                          className="bg-red-500 px-3 rounded"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+
+                    <button
+                      onClick={() => {
+                        const updated = [...data.experience];
+                        updated[i].points.push("");
+                        setData({ ...data, experience: updated });
+                      }}
+                      className="bg-blue-500 px-3 py-1 rounded"
+                    >
+                      Add Responsibility
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      const updated = data.experience.filter(
+                        (_: any, index: number) => index !== i,
+                      );
+                      setData({ ...data, experience: updated });
+                      closeModal();
+                    }}
+                    className="bg-red-600 px-4 py-2 rounded w-full"
+                  >
+                    Delete Experience
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {isEducationModalOpen && selectedEducation !== null && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-900 rounded-xl p-6 w-full max-w-xl">
+            <div className="flex justify-between mb-4">
+              <h2 className="text-xl font-semibold">Edit Education</h2>
+              <button onClick={closeEducationModal}>✕</button>
+            </div>
+
+            {(() => {
+              const i = selectedEducation;
+              const edu = data.education?.[i];
+              if (!edu) return null;
+
+              return (
+                <div className="space-y-4">
+                  <RightLabelInput
+                    label="-Degree"
+                    value={edu.degree}
+                    onChange={(e) => {
+                      const updated = [...data.education];
+                      updated[i].degree = e.target.value;
+                      setData({ ...data, education: updated });
+                    }}
+                  />
+
+                  <RightLabelInput
+                    label="-Institute"
+                    value={edu.institute}
+                    onChange={(e) => {
+                      const updated = [...data.education];
+                      updated[i].institute = e.target.value;
+                      setData({ ...data, education: updated });
+                    }}
+                  />
+
+                  <RightLabelInput
+                    label="-Year"
+                    value={edu.year}
+                    onChange={(e) => {
+                      const updated = [...data.education];
+                      updated[i].year = e.target.value;
+                      setData({ ...data, education: updated });
+                    }}
+                  />
+
+                  <button
+                    onClick={() => {
+                      const updated = data.education.filter(
+                        (_: any, index: number) => index !== i,
+                      );
+                      setData({ ...data, education: updated });
+                      closeEducationModal();
+                    }}
+                    className="bg-red-600 px-4 py-2 rounded w-full"
+                  >
+                    Delete Education
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+      {isProjectModalOpen && selectedProject !== null && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-900 rounded-xl p-6 w-full max-w-2xl">
+            <div className="flex justify-between mb-4">
+              <h2 className="text-xl font-semibold">Edit Project</h2>
+              <button onClick={closeProjectModal}>✕</button>
+            </div>
+
+            {(() => {
+              const i = selectedProject;
+              const proj = data.projects?.[i];
+              if (!proj) return null;
+
+              return (
+                <div className="space-y-4">
+                  <RightLabelInput
+                    label="-Project Title"
+                    value={proj.title}
+                    onChange={(e) => {
+                      const updated = [...data.projects];
+                      updated[i].title = e.target.value;
+                      setData({ ...data, projects: updated });
+                    }}
+                  />
+
+                  {(proj.description || []).map((p: string, pI: number) => (
+                    <div key={pI} className="flex gap-2">
+                      <input
+                        value={p}
+                        className="w-full border rounded p-2 bg-black/40"
+                        onChange={(e) => {
+                          const updated = [...data.projects];
+                          updated[i].description[pI] = e.target.value;
+                          setData({ ...data, projects: updated });
+                        }}
+                      />
+
+                      <button
+                        onClick={() => {
+                          const updated = [...data.projects];
+                          updated[i].description = updated[
+                            i
+                          ].description.filter(
+                            (_: any, index: number) => index !== pI,
+                          );
+                          setData({ ...data, projects: updated });
+                        }}
+                        className="bg-red-500 px-3 rounded"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+
+                  <button
+                    onClick={() => {
+                      const updated = [...data.projects];
+                      updated[i].description.push("");
+                      setData({ ...data, projects: updated });
+                    }}
+                    className="bg-blue-500 px-3 py-1 rounded"
+                  >
+                    Add Bullet
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

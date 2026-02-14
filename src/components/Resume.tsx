@@ -100,10 +100,7 @@ export default function Resume() {
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* RIGHT */}
-          <div className="space-y-6">
             {/* Skills */}
             <div>
               <h3 className="text-xl font-bold mb-2">Skills</h3>
@@ -123,7 +120,10 @@ export default function Resume() {
                 <p className="text-sm opacity-70">No skills added</p>
               )}
             </div>
+          </div>
 
+          {/* RIGHT */}
+          <div className="space-y-6">
             {/* Projects */}
             <div>
               <h3 className="text-xl font-bold">Projects</h3>
