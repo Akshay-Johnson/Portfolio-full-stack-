@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Resume from "@/lib/models/resume";
 
+import fs from "fs";
+import path from "path";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -20,6 +23,45 @@ export async function GET() {
     }
 
     const resume = resumeDoc as any;
+
+    // ================= DEBUG START =================
+    console.log("===== PUPPETEER DEBUG START =====");
+
+    console.log("Running on Vercel:", process.env.VERCEL);
+    console.log("Node ENV:", process.env.NODE_ENV);
+    console.log("Platform:", process.platform);
+    console.log("Arch:", process.arch);
+
+    const chromiumModulePath = path.join(
+      process.cwd(),
+      "node_modules",
+      "@sparticuz",
+      "chromium",
+    );
+
+    const chromiumBinPath = path.join(chromiumModulePath, "bin");
+
+    console.log("Chromium module path:", chromiumModulePath);
+    console.log("Chromium module exists:", fs.existsSync(chromiumModulePath));
+    console.log("Chromium bin exists:", fs.existsSync(chromiumBinPath));
+
+    if (fs.existsSync(chromiumModulePath)) {
+      console.log("Chromium module files:", fs.readdirSync(chromiumModulePath));
+    }
+
+    if (fs.existsSync(chromiumBinPath)) {
+      console.log("Chromium bin files:", fs.readdirSync(chromiumBinPath));
+    }
+
+    try {
+      const testExecutable = await chromium.executablePath();
+      console.log("Executable Path Test:", testExecutable);
+    } catch (err) {
+      console.log("Executable Path ERROR:", err);
+    }
+
+    console.log("===== PUPPETEER DEBUG END =====");
+    // ================= DEBUG END ================
     const html = `
 <html>
 <head>
@@ -203,9 +245,13 @@ export async function GET() {
 
     // ===== Browser Launch =====
     if (isVercel) {
+      console.log("Launching Chromium via Sparticuz...");
+
       chromium.setGraphicsMode = true;
 
       const executablePath = await chromium.executablePath();
+
+      console.log("Using executable path:", executablePath);
 
       browser = await puppeteer.launch({
         args: chromium.args,
@@ -213,7 +259,8 @@ export async function GET() {
         headless: true,
       });
     } else {
-      // ⭐ Windows / Local Safe Launch
+      console.log("Launching Local Puppeteer...");
+
       const puppeteerFull = await import("puppeteer");
 
       browser = await puppeteerFull.default.launch({
