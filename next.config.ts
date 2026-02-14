@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import type { Configuration } from "webpack";
+
 
 const nextConfig: NextConfig = {
   images: {
@@ -13,11 +13,8 @@ const nextConfig: NextConfig = {
 
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
 
-  webpack: (config: Configuration) => {
-    config.externals = config.externals || [];
-    (config.externals as any).push("@sparticuz/chromium");
-    return config;
-  },
+  // ⭐ Add empty turbopack config to silence error
+  turbopack: {},
 };
 
 export default nextConfig;
