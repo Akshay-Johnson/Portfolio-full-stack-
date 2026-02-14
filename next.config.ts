@@ -1,5 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+import type { Configuration } from "webpack";
+
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
@@ -9,8 +11,13 @@ const nextConfig = {
     ],
   },
 
-  // ⭐ Correct place for external server packages (Next 16+)
-  serverExternalPackages: ["puppeteer-core", "@sparticuz/chromium"],
+  serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
+
+  webpack: (config: Configuration) => {
+    config.externals = config.externals || [];
+    (config.externals as any).push("@sparticuz/chromium");
+    return config;
+  },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
