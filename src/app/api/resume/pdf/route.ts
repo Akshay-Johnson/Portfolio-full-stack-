@@ -196,17 +196,20 @@ export async function GET() {
 </body>
 </html>
 `;
-    chromium.setGraphicsMode = false;
+    chromium.setGraphicsMode = true;
 
-    const executablePath = await chromium.executablePath();
+    const executablePath = await chromium.executablePath(
+      process.env.CHROMIUM_PATH,
+    );
 
     if (!executablePath) {
       throw new Error("Chromium path missing");
     }
 
     const browser = await puppeteer.launch({
-      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath,
+      args: chromium.args,
+      defaultViewport: { width: 1200, height: 1600 },
+      executablePath: executablePath,
       headless: true,
     });
 
