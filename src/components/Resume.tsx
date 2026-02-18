@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Button from "@/components/Button";
 
 function safeArray(value: any): string[] {
   if (!value) return [];
@@ -40,9 +41,9 @@ export default function Resume() {
       <a
         href="/api/resume/pdf"
         target="_blank"
-        className="bg-white text-black px-6 py-3 rounded-xl"
+        
       >
-        Download Resume PDF
+        <Button/>
       </a>
 
       <div className="max-w-7xl mx-auto px-6">
