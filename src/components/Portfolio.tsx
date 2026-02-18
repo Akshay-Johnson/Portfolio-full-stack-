@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { Github, ExternalLink } from "lucide-react";
 
 type Project = {
   _id: string;
@@ -54,7 +55,7 @@ export default function Portfolio() {
   return (
     <section id="projects" className="py-16 md:py-20">
       <h2 className="text-3xl md:text-6xl font-bold text-center mb-12 md:mb-16">
-        Projects
+        My Projects
       </h2>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
@@ -126,7 +127,7 @@ export default function Portfolio() {
                     rel="noopener noreferrer"
                     className="text-xs px-3 py-1 bg-blue-500 rounded-md"
                   >
-                    Live
+                    <ExternalLink size={16} />
                   </a>
                 )}
 
@@ -137,7 +138,7 @@ export default function Portfolio() {
                     rel="noopener noreferrer"
                     className="text-xs px-3 py-1 bg-gray-700 rounded-md"
                   >
-                    Code
+                    <Github size={16} />
                   </a>
                 )}
               </div>

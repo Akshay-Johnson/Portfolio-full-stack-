@@ -34,7 +34,7 @@ export default function Contact() {
                 name="name"
                 required
                 autoComplete="name"
-                placeholder="John Doe"
+                placeholder="Bruce Wayne"
                 className="w-full p-3 rounded-lg bg-white/10 border border-white/20 
                            focus:outline-none focus:ring-2 focus:ring-blue-500 
                            transition"
@@ -72,7 +72,7 @@ export default function Contact() {
               type="email"
               required
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder="bruce@wayne.com"
               className="w-full p-3 rounded-lg bg-white/10 border border-white/20 
                          focus:outline-none focus:ring-2 focus:ring-blue-500 
                          transition"

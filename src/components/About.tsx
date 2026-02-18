@@ -51,7 +51,7 @@ export default function About() {
     >
       {/* Background Glow (Reduced on Mobile) */}
       <div className="absolute inset-0 -z-10 hidden md:block">
-        <div className="absolute top-1/4 left-1/3 w-[400px] h-[400px] blur-[100px] bg-green-500/10 rounded-full"></div>
+        <div className="absolute top-1/4 left-1/3 w-[400px] h-[400px] blur-[100px]  rounded-full"></div>
         <div className="absolute bottom-1/4 right-1/3 w-[350px] h-[350px] blur-[100px] bg-emerald-500/10 rounded-full"></div>
       </div>
 
@@ -60,7 +60,7 @@ export default function About() {
         <div className="text-center mb-14 md:mb-20">
           <h2 className="text-3xl md:text-5xl font-bold tracking-wide relative inline-block">
             About Me
-            <span className="block h-1 w-14 md:w-16 bg-green-500 mx-auto mt-4 rounded-full"></span>
+            <span className="block h-1 w-14 md:w-16 bg-white mx-auto mt-4 rounded-full"></span>
           </h2>
         </div>
 
