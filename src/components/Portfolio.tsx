@@ -14,64 +14,82 @@ type Project = {
 };
 
 const techColors = [
-  "bg-blue-500",
-  "bg-purple-500",
-  "bg-orange-500",
-  "bg-green-500",
-  "bg-yellow-500",
-  "bg-red-500",
-  "bg-indigo-500",
+  "bg-blue-500/80",
+  "bg-purple-500/80",
+  "bg-orange-500/80",
+  "bg-green-500/80",
+  "bg-yellow-500/80",
+  "bg-red-500/80",
+  "bg-indigo-500/80",
 ];
 
 export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/projects")
-      .then((res) => res.json())
-      .then(setProjects);
-    console.log(projects);
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch("/api/projects");
+        const data = await res.json();
+        setProjects(data);
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
+  if (loading) {
+    return (
+      <section id="projects" className="py-20 text-center">
+        <p className="text-white/60 animate-pulse">Loading projects...</p>
+      </section>
+    );
+  }
+
   return (
-    <section id="projects" className="py-20 ">
-      <h2 className="text-4xl md:text-6xl font-bold text-center mb-16">
+    <section id="projects" className="py-16 md:py-20">
+      <h2 className="text-3xl md:text-6xl font-bold text-center mb-12 md:mb-16">
         Projects
       </h2>
 
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-10 ">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
         {projects.map((p) => (
           <div
             key={p._id}
-            className="group relative bg-black/20 backdrop-blur-xl border border-white/25 
-                    rounded-2xl overflow-hidden shadow-xl transition duration-300 
-                    hover:-translate-y-3 hover:shadow-2xl flex flex-col"
+            className="group relative bg-white/5 backdrop-blur-md border border-white/15 
+                       rounded-2xl overflow-hidden shadow-lg transition duration-300 
+                       hover:-translate-y-2 flex flex-col"
           >
             {/* Image */}
             {p.image && (
-              <div className="relative w-full h-52 overflow-hidden">
+              <div className="relative w-full h-48 md:h-52 overflow-hidden">
                 <Image
                   src={p.image}
                   alt={p.title}
                   fill
-                  className="object-cover transition duration-500 group-hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition duration-500 group-hover:scale-105"
                 />
 
-                {/* Hover Overlay */}
+                {/* Desktop Hover Overlay */}
                 <div
                   className="absolute inset-0 bg-black/70 opacity-0 
-                    group-hover:opacity-100 transition duration-300 
-                    flex items-center justify-center gap-4"
+                             md:group-hover:opacity-100 transition duration-300 
+                             hidden md:flex items-center justify-center gap-4"
                 >
                   {p.liveUrl && (
                     <a
                       href={p.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2 bg-blue-500 rounded-lg text-white 
-                     hover:bg-blue-600 transition"
+                      className="px-4 py-2 bg-blue-500 rounded-lg text-white hover:bg-blue-600 transition"
                     >
-                      Live Demo
+                      Live
                     </a>
                   )}
 
@@ -80,10 +98,9 @@ export default function Portfolio() {
                       href={p.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2 bg-gray-700 rounded-lg text-white 
-                     hover:bg-gray-800 transition"
+                      className="px-4 py-2 bg-gray-700 rounded-lg text-white hover:bg-gray-800 transition"
                     >
-                      GitHub
+                      Code
                     </a>
                   )}
                 </div>
@@ -91,20 +108,47 @@ export default function Portfolio() {
             )}
 
             {/* Content */}
-            <div className="p-6 flex flex-col flex-grow">
-              <h3 className="text-xl font-bold mb-2">{p.title}</h3>
+            <div className="p-5 md:p-6 flex flex-col flex-grow">
+              <h3 className="text-lg md:text-xl font-bold mb-2">{p.title}</h3>
 
-              <p className="text-white text-sm leading-relaxed py-2">
-                {p.description}
-              </p>
+              {p.description && (
+                <p className="text-white/80 text-sm leading-relaxed mb-3">
+                  {p.description}
+                </p>
+              )}
 
+              {/* Mobile Buttons */}
+              <div className="flex gap-3 mb-3 md:hidden">
+                {p.liveUrl && (
+                  <a
+                    href={p.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs px-3 py-1 bg-blue-500 rounded-md"
+                  >
+                    Live
+                  </a>
+                )}
+
+                {p.githubUrl && (
+                  <a
+                    href={p.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs px-3 py-1 bg-gray-700 rounded-md"
+                  >
+                    Code
+                  </a>
+                )}
+              </div>
+
+              {/* Tech Stack */}
               <div className="flex flex-wrap gap-2 mt-auto pt-3">
                 {p.techStack?.map((tech, i) => (
                   <span
                     key={i}
-                    className={`text-xs px-3 py-1 rounded-md border  border-white/20 font-bold shadow text-white/80 backdrop-blur-sm ${
-                      techColors[i % techColors.length]
-                    }`}
+                    className={`text-xs px-3 py-1 rounded-md border border-white/20 font-medium text-white 
+                                ${techColors[i % techColors.length]}`}
                   >
                     {tech}
                   </span>

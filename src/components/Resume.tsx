@@ -1,9 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Button from "@/components/Button";
 
-function safeArray(value: any): string[] {
+interface ResumeData {
+  profile?: {
+    name?: string;
+    phone?: string;
+    email?: string;
+    location?: string;
+    github?: string;
+    linkedin?: string;
+    summary?: string;
+  };
+  experience?: {
+    title?: string;
+    company?: string;
+    year?: string;
+    points?: string[];
+  }[];
+  education?: {
+    degree?: string;
+    institute?: string;
+    year?: string;
+  }[];
+  skills?: Record<string, string[]>;
+  projects?: {
+    title?: string;
+    description?: string[];
+    link?: string;
+  }[];
+  certifications?: string[];
+  languages?: string[];
+}
+
+function safeArray(value: unknown): any[] {
   if (!value) return [];
   if (Array.isArray(value)) return value;
   if (typeof value === "object") return Object.values(value);
@@ -12,7 +43,7 @@ function safeArray(value: any): string[] {
 }
 
 function formatSkillTitle(key: string) {
-  const map: any = {
+  const map: Record<string, string> = {
     apiSecurity: "APIs & Security",
     toolsDeployment: "Tools & Deployment",
     cloudVirtualization: "Cloud & Virtualization",
@@ -23,170 +54,184 @@ function formatSkillTitle(key: string) {
 }
 
 export default function Resume() {
-  const [resume, setResume] = useState<any>(null);
+  const [resume, setResume] = useState<ResumeData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/resume")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Resume Data:", data);
+    const fetchResume = async () => {
+      try {
+        const res = await fetch("/api/resume");
+        const data = await res.json();
         setResume(data);
-      });
+      } catch (error) {
+        console.error("Failed to fetch resume:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResume();
   }, []);
+
+  if (loading) {
+    return (
+      <section className="py-24 text-center text-white">
+        <p className="animate-pulse text-white/60">Loading resume...</p>
+      </section>
+    );
+  }
 
   if (!resume) return null;
 
   return (
-    <section id="resume" className="py-24 px-6 flex justify-center">
-      <div className="w-full max-6xl">
-        <div className="relative text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold drop-shadow-lg">
-            Resume
-          </h2>
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden md:block">
-            <a href="/api/resume/pdf" target="_blank">
-              <Button />
-            </a>
-          </div>
+    <section
+      id="resume"
+      className="py-16 md:py-24 px-4 md:px-6 flex justify-center"
+    >
+      <div className="w-full max-w-6xl">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-14 gap-6">
+          <h2 className="text-3xl md:text-5xl font-bold">Resume</h2>
+
+          <a href="/api/resume/pdf" target="_blank" rel="noopener noreferrer">
+            <Button />
+          </a>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-12 text-center space-y-1">
-            {" "}
-            <h2 className="text-xl font-bold">{resume.profile?.name}</h2>
-            <p>{resume.profile?.phone}</p>
-            <p>{resume.profile?.email}</p>
-            <p>{resume.profile?.location}</p>
-            <p>GitHub: {resume.profile?.github}</p>
-            <p>LinkedIn: {resume.profile?.linkedin}</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-            {/* LEFT */}
-            <div className="space-y-6">
-              {/* Profile */}
-              <div>
-                <p className="mt-3 text-white max-w-prose">
-                  {resume.profile?.summary}
-                </p>
-              </div>
+        {/* Profile */}
+        <div className="text-center mb-10 space-y-1 text-sm md:text-base">
+          <h3 className="text-xl font-semibold">{resume.profile?.name}</h3>
+          <p>{resume.profile?.phone}</p>
+          <p>{resume.profile?.email}</p>
+          <p>{resume.profile?.location}</p>
+          <p>GitHub: {resume.profile?.github}</p>
+          <p>LinkedIn: {resume.profile?.linkedin}</p>
+        </div>
 
-              {/* Experience */}
-              <div>
-                <h3 className="text-lg font-bold">Experience</h3>
+        {/* Grid Layout */}
+        <div className="grid md:grid-cols-2 gap-12">
+          {/* LEFT */}
+          <div className="space-y-10">
+            {/* Summary */}
+            <section>
+              <h3 className="text-xl font-bold mb-3">Profile</h3>
+              <p className="leading-relaxed text-white/90">
+                {resume.profile?.summary}
+              </p>
+            </section>
 
-                {safeArray(resume.experience).map((exp: any, i: number) => (
-                  <div key={i}>
-                    <p className="font-semibold">
-                      {exp.title} - {exp.company}
-                    </p>
+            {/* Experience */}
+            <section>
+              <h3 className="text-xl font-bold mb-4">Experience</h3>
 
-                    <p className="text-sm text-white/80">{exp.year}</p>
+              {safeArray(resume.experience).map((exp, i) => (
+                <div key={i} className="mb-6">
+                  <p className="font-semibold">
+                    {exp.title} – {exp.company}
+                  </p>
+                  <p className="text-sm text-white/70 mb-2">{exp.year}</p>
 
-                    <ul className="list-disc pl-6">
-                      {safeArray(exp.points).map((p: string, idx: number) => (
-                        <li key={idx}>{p}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-
-              {/* Education */}
-              <div>
-                <h3 className="text-xl font-bold">Education</h3>
-
-                {safeArray(resume.education).map((edu: any, i: number) => (
-                  <div key={i}>
-                    <ul className="list-disc pl-6">
-                      <li className="font-semibold py-2">{edu.degree}</li>
-                      <p>
-                        {edu.institute} - {edu.year}
-                      </p>
-                    </ul>
-                  </div>
-                ))}
-              </div>
-
-              {/* Skills */}
-              <div>
-                <h3 className="text-xl font-bold mb-2">Skills</h3>
-
-                {resume.skills && Object.keys(resume.skills).length > 0 ? (
-                  <ul className="list-disc pl-6 space-y-2">
-                    {Object.entries(resume.skills).map(([key, value]: any) => (
-                      <li key={key}>
-                        <strong className="capitalize">
-                          {formatSkillTitle(key)}:
-                        </strong>{" "}
-                        {safeArray(value).join(", ")}
-                      </li>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {safeArray(exp.points).map((point: string, idx: number) => (
+                      <li key={idx}>{point}</li>
                     ))}
                   </ul>
-                ) : (
-                  <p className="text-sm opacity-70">No skills added</p>
-                )}
-              </div>
-            </div>
+                </div>
+              ))}
+            </section>
 
-            {/* RIGHT */}
-            <div className="space-y-6">
-              {/* Projects */}
-              <div>
-                <h3 className="text-xl font-bold">Projects</h3>
-                {safeArray(resume.projects).map((proj: any, i: number) => (
-                  <div key={i} className="mb-4">
-                    <p className="font-semibold">{proj.title}</p>
+            {/* Education */}
+            <section>
+              <h3 className="text-xl font-bold mb-4">Education</h3>
 
-                    <ul className="list-disc pl-6 mt-1 space-y-1">
-                      {safeArray(proj.description).map(
-                        (point: string, idx: number) => (
-                          <li key={idx}>{point}</li>
-                        ),
-                      )}
-                    </ul>
+              {safeArray(resume.education).map((edu, i) => (
+                <div key={i} className="mb-4">
+                  <p className="font-semibold">{edu.degree}</p>
+                  <p className="text-sm text-white/70">
+                    {edu.institute} – {edu.year}
+                  </p>
+                </div>
+              ))}
+            </section>
 
-                    {proj.link && (
-                      <a
-                        href={
-                          proj.link.startsWith("http")
-                            ? proj.link
-                            : `https://${proj.link}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline"
-                      >
-                        View Project
-                      </a>
+            {/* Skills */}
+            <section>
+              <h3 className="text-xl font-bold mb-4">Skills</h3>
+
+              {resume.skills && Object.keys(resume.skills).length > 0 ? (
+                <ul className="space-y-2">
+                  {Object.entries(resume.skills).map(([key, value]) => (
+                    <li key={key}>
+                      <strong>{formatSkillTitle(key)}:</strong>{" "}
+                      {safeArray(value).join(", ")}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm opacity-70">No skills added</p>
+              )}
+            </section>
+          </div>
+
+          {/* RIGHT */}
+          <div className="space-y-10">
+            {/* Projects */}
+            <section>
+              <h3 className="text-xl font-bold mb-4">Projects</h3>
+
+              {safeArray(resume.projects).map((proj, i) => (
+                <div key={i} className="mb-6">
+                  <p className="font-semibold">{proj.title}</p>
+
+                  <ul className="list-disc pl-5 mt-2 space-y-1">
+                    {safeArray(proj.description).map(
+                      (point: string, idx: number) => (
+                        <li key={idx}>{point}</li>
+                      ),
                     )}
-                  </div>
-                ))}
-              </div>
+                  </ul>
 
-              {/* Certifications */}
-              <div>
-                <h3 className="text-xl font-bold">Certifications</h3>
+                  {proj.link && (
+                    <a
+                      href={
+                        proj.link.startsWith("http")
+                          ? proj.link
+                          : `https://${proj.link}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 underline mt-2 inline-block"
+                    >
+                      View Project
+                    </a>
+                  )}
+                </div>
+              ))}
+            </section>
 
+            {/* Certifications */}
+            <section>
+              <h3 className="text-xl font-bold mb-4">Certifications</h3>
+
+              <ul className="list-disc pl-5 space-y-1">
                 {safeArray(resume.certifications).map(
                   (c: string, i: number) => (
-                    <ul className="list-disc pl-6">
-                      <li key={i}>{c}</li>
-                    </ul>
+                    <li key={i}>{c}</li>
                   ),
                 )}
-              </div>
+              </ul>
+            </section>
 
-              {/* Languages */}
-              <div>
-                <h3 className="text-xl font-bold">Languages</h3>
+            {/* Languages */}
+            <section>
+              <h3 className="text-xl font-bold mb-4">Languages</h3>
 
+              <ul className="list-disc pl-5 space-y-1">
                 {safeArray(resume.languages).map((l: string, i: number) => (
-                  <ul className="list-disc pl-6">
-                    <li key={i}>{l}</li>
-                  </ul>
+                  <li key={i}>{l}</li>
                 ))}
-              </div>
-            </div>
+              </ul>
+            </section>
           </div>
         </div>
       </div>
