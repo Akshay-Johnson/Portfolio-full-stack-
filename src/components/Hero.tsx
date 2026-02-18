@@ -1,14 +1,61 @@
+"use client";
+
+import { Github, Instagram, Mail } from "lucide-react";
+
 export default function Hero() {
   return (
     <section
       id="hero"
-      className="h-screen relative flex items-center justify-center text-center bg-fixed bg-cover bg-center"
+      className="h-screen mb-2 relative flex items-center border border-2 border-gray-400 rounded-2xl justify-center text-center bg-fixed bg-cover bg-center"
       style={{ backgroundImage: 'url("p.jpg")' }}
     >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm border border-2xl border-gray-400 rounded-2xl pointer-events-none"></div>
 
-      <i className="fa-solid fa-code absolute left-10 bottom-20 text-4xl opacity-70 animate-float"></i>
-      <i className="fa-solid fa-laptop-code absolute right-10 top-20 text-4xl opacity-70 animate-float"></i>
+      {/* TOP RIGHT NAV */}
+      <nav className="absolute top-8 right-10 z-30 hidden md:flex gap-8 text-sm tracking-widest uppercase text-white">
+        <a href="#about" className="hover:text-gray-300 transition">
+          About
+        </a>
+        <a href="#resume" className="hover:text-gray-300 transition">
+          Resume
+        </a>
+        <a href="#projects" className="hover:text-gray-300 transition">
+          Projects
+        </a>
+        <a href="#contact" className="hover:text-gray-300 transition">
+          Contact
+        </a>
+      </nav>
+
+      {/* LEFT BOTTOM SOCIAL */}
+      <div className="absolute left-8 bottom-10 z-20 flex flex-col items-center gap-6 text-white">
+        <a
+          href="https://github.com/Akshay-Johnson"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="social-icon"
+        >
+          <Github size={20} strokeWidth={1.5} />
+        </a>
+
+        <a
+          href="https://instagram.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="social-icon"
+        >
+          <Instagram size={20} strokeWidth={1.5} />
+        </a>
+
+        <a
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=akshayjohnson117@gmail.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="social-icon"
+        >
+          <Mail size={20} strokeWidth={1.5} />
+        </a>
+      </div>
 
       <div className="relative z-10 max-w-xl px-4" data-aos="zoom-in">
         <h1 className="text-6xl md:text-7xl font-bold tracking-widest">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Submit from "@/components/Submit";
 
 export default function Contact() {
   const [form, setForm] = useState({
@@ -37,7 +38,7 @@ export default function Contact() {
     }
   }
   return (
-    <section id="contact" className="py-20 backdrop-blur-2xl bg-black/20">
+    <section id="contact" className="py-20">
       <div className="max-w-4xl mx-auto px-6">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-3">
           Get in Touch
@@ -45,7 +46,7 @@ export default function Contact() {
         <p className="text-center text-lg mb-10 opacity-90">Let's connect!</p>
         <form
           onSubmit={handleSubmit}
-          className="bg-white/10 backdrop-blur-lg p-8 rounded-lg shadow-lg max-w-2xl mx-auto"
+          className="  p-8 rounded-lg shadow-lg max-w-2xl mx-auto"
         >
           <div className="flex flex-col md:flex-row gap-4 mb-2">
             <input
@@ -80,13 +81,11 @@ export default function Contact() {
             className="w-full mb-4 p-3 rounded bg-white/20 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
-
-          <button
-            type="submit"
-            className="w-full p-3 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors"
-          >
-            Send Message
-          </button>
+          <div className="flex justify-center">
+            <button type="submit">
+              <Submit />
+            </button>
+          </div>
         </form>
       </div>
     </section>

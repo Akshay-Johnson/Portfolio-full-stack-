@@ -34,7 +34,7 @@ export default function Portfolio() {
   }, []);
 
   return (
-    <section className="py-20 backdrop-blur-2xl bg-black/20">
+    <section id="projects" className="py-20 ">
       <h2 className="text-4xl md:text-6xl font-bold text-center mb-16">
         Projects
       </h2>
@@ -44,8 +44,8 @@ export default function Portfolio() {
           <div
             key={p._id}
             className="group relative bg-black/20 backdrop-blur-xl border border-white/25 
-  rounded-2xl overflow-hidden shadow-xl transition duration-300 
-  hover:-translate-y-3 hover:shadow-2xl flex flex-col"
+                    rounded-2xl overflow-hidden shadow-xl transition duration-300 
+                    hover:-translate-y-3 hover:shadow-2xl flex flex-col"
           >
             {/* Image */}
             {p.image && (
