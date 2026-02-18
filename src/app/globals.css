@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
+/* ========================= */
+/* ROOT VARIABLES */
+/* ========================= */
+
 :root {
-  --background-url: url("/s2.jpg");
+  --background-url: url("/s2.avif"); /* Use optimized WebP image */
   --background: #ffffff;
   --foreground: #000000;
 
@@ -21,7 +25,9 @@
   }
 }
 
-/* Hide scrollbar but keep scroll functionality */
+/* ========================= */
+/* SCROLLBAR HIDE */
+/* ========================= */
 
 /* Chrome, Edge, Safari */
 ::-webkit-scrollbar {
@@ -38,6 +44,10 @@ body {
   -ms-overflow-style: none;
 }
 
+/* ========================= */
+/* NAV HOVER EFFECT */
+/* ========================= */
+
 nav a {
   position: relative;
 }
@@ -50,20 +60,25 @@ nav a::after {
   width: 0%;
   height: 1px;
   background: white;
-  transition: 0.3s;
+  transition: width 0.3s ease;
 }
 
 nav a:hover::after {
   width: 100%;
 }
 
-/* ---------- BODY BACKGROUND ---------- */
+/* ========================= */
+/* BODY BACKGROUND */
+/* ========================= */
+
 body {
   background-image: var(--background-url);
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
   background-repeat: no-repeat;
+
+  /* Removed fixed for performance */
+  background-attachment: scroll;
 
   color: var(--foreground);
   font-family: var(--font-mono);
@@ -71,58 +86,92 @@ body {
   position: relative;
 }
 
-/* Dark overlay for readability */
+/* Enable fixed background only on desktop */
+@media (min-width: 1024px) {
+  body {
+    background-attachment: fixed;
+  }
+}
+
+/* ========================= */
+/* DARK OVERLAY */
+/* ========================= */
+
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
+
+  /* Reduced opacity & blur for performance */
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+
   z-index: -1;
 }
 
-/* ---------- GLASS MORPHISM CARD ---------- */
+/* ========================= */
+/* GLASS MORPHISM CARD */
+/* ========================= */
+
 .glass {
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.08);
+
+  /* Reduced blur for smoother rendering */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 
   border-radius: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    inset 0 0 10px rgba(0, 0, 0, 0.1);
+  /* Optimized shadow */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 
   padding: 2rem;
 }
 
-/* Dark mode glass adjustment */
+/* Dark mode adjustment */
 @media (prefers-color-scheme: dark) {
   .glass {
-    background: rgba(0, 0, 0, 0.3);
-    border: 10px solid rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 }
 
-/* Input placeholder alignment */
-.input-placeholder-right::placeholder {
-  text-align: right;
-}
+/* ========================= */
+/* GLASS SECTION */
+/* ========================= */
 
 .glass-section {
-  background: rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.06);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
   border-radius: 30px;
-  border: 5px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 10 20px 60px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
   padding: 4rem 3rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
+
+/* ========================= */
+/* SECTION TITLE */
+/* ========================= */
 
 .section-title {
   text-align: center;
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 3rem;
+}
+
+/* ========================= */
+/* INPUT ALIGNMENT */
+/* ========================= */
+
+.input-placeholder-right::placeholder {
+  text-align: right;
 }

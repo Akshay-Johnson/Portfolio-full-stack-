@@ -54,13 +54,13 @@ export default function Home() {
 
         <section className="glass-section-wrapper">
           <div className="glass-section">
-            {/* <Resume /> */}
+            <Resume />
           </div>
         </section>
 
         <section className="glass-section-wrapper">
           <div className="glass-section">
-            {/* <Portfolio /> */}
+            <Portfolio />
           </div>
         </section>
 
