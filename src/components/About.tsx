@@ -63,7 +63,7 @@ export default function About() {
               </p>
 
               <p>
-                <strong className="text-white"> <Code size={16} className="inline mr-2" /> </strong>{" "}
+                <strong className="text-white"></strong>{" "}
                 {about.skills?.join(", ")}
               </p>
             </div>
