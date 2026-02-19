@@ -23,7 +23,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-black/60"></div>
 
       {/* Top Navigation (Desktop Only) */}
-      <nav className="absolute top-8 right-10 z-30 hidden md:flex gap-8 text-sm tracking-widest uppercase">
+      <nav className="absolute top-8 right-10 z-30 hidden md:flex gap-8 text-sm tracking-widest uppercase ">
         {["About", "Resume", "Projects", "Contact"].map((item) => (
           <a
             key={item}
@@ -36,7 +36,7 @@ export default function Hero() {
       </nav>
 
       {/* Social Icons (Hidden on small screens to reduce clutter) */}
-      <div className="absolute left-6 bottom-8 z-20 hidden md:flex flex-col gap-6">
+      <div className="absolute left-6 bottom-8 z-20 hidden md:flex flex-col gap-6 animate-bounce">
         <a
           href="https://github.com/Akshay-Johnson"
           target="_blank"
@@ -69,12 +69,12 @@ export default function Hero() {
           Hi, I'm Akshay
         </h1>
 
-        <p className="mt-4 text-base sm:text-lg md:text-2xl text-white/90">
+        <p className="mt-4 text-base sm:text-lg md:text-2xl text-white/90 animate-pulse">
           Software Developer • Designer • Tech Enthusiast
         </p>
 
         {/* Mobile Social Icons */}
-        <div className="flex justify-center gap-6 mt-8 md:hidden">
+        <div className="flex justify-center gap-6 mt-8 md:hidden animate-bounce">
           <a
             href="https://github.com/Akshay-Johnson"
             target="_blank"

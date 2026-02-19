@@ -15,14 +15,15 @@ type Project = {
 };
 
 const techColors = [
-  "bg-blue-500/80",
-  "bg-purple-500/80",
-  "bg-orange-500/80",
-  "bg-green-500/80",
-  "bg-yellow-500/80",
-  "bg-red-500/80",
-  "bg-indigo-500/80",
+  "bg-gradient-to-br from-sky-400/20 to-blue-600/30 border border-sky-400/30",
+  "bg-gradient-to-br from-violet-400/20 to-purple-600/30 border border-violet-400/30",
+  "bg-gradient-to-br from-amber-300/20 to-orange-500/30 border border-amber-400/30",
+  "bg-gradient-to-br from-emerald-400/20 to-green-600/30 border border-emerald-400/30",
+  "bg-gradient-to-br from-rose-400/20 to-red-500/30 border border-rose-400/30",
+  "bg-gradient-to-br from-indigo-400/20 to-indigo-600/30 border border-indigo-400/30",
+  "bg-gradient-to-br from-cyan-400/20 to-teal-500/30 border border-cyan-400/30",
 ];
+
 
 export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);

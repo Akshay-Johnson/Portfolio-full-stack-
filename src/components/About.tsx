@@ -14,6 +14,17 @@ interface AboutData {
   profileImage: string;
 }
 
+const techColors = [
+  "bg-gradient-to-br from-sky-400/20 to-blue-600/30 border border-sky-400/30",
+  "bg-gradient-to-br from-violet-400/20 to-purple-600/30 border border-violet-400/30",
+  "bg-gradient-to-br from-amber-300/20 to-orange-500/30 border border-amber-400/30",
+  "bg-gradient-to-br from-emerald-400/20 to-green-600/30 border border-emerald-400/30",
+  "bg-gradient-to-br from-rose-400/20 to-red-500/30 border border-rose-400/30",
+  "bg-gradient-to-br from-indigo-400/20 to-indigo-600/30 border border-indigo-400/30",
+  "bg-gradient-to-br from-cyan-400/20 to-teal-500/30 border border-cyan-400/30",
+];
+
+
 export default function About() {
   const [about, setAbout] = useState<AboutData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,14 +45,6 @@ export default function About() {
     fetchAbout();
   }, []);
 
-  if (loading) {
-    return (
-      <section className="min-h-screen flex items-center justify-center text-white">
-        <p className="text-white/60 animate-pulse">Loading...</p>
-      </section>
-    );
-  }
-
   if (!about) return null;
 
   return (
@@ -49,14 +52,12 @@ export default function About() {
       id="about"
       className="relative min-h-screen flex items-center justify-center px-5 md:px-8 py-20 md:py-28 text-white overflow-hidden"
     >
-      {/* Background Glow (Reduced on Mobile) */}
       <div className="absolute inset-0 -z-10 hidden md:block">
         <div className="absolute top-1/4 left-1/3 w-[400px] h-[400px] blur-[100px]  rounded-full"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-[350px] h-[350px] blur-[100px] bg-emerald-500/10 rounded-full"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-[350px] h-[350px] blur-[100px] rounded-full"></div>
       </div>
 
       <div className="max-w-6xl w-full">
-        {/* Title */}
         <div className="text-center mb-14 md:mb-20">
           <h2 className="text-3xl md:text-5xl font-bold tracking-wide relative inline-block">
             About Me
@@ -64,9 +65,7 @@ export default function About() {
           </h2>
         </div>
 
-        {/* Grid Layout */}
         <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] items-center">
-          {/* TEXT CARD */}
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-10 shadow-xl transition duration-300 hover:-translate-y-1">
             <p className="text-base md:text-lg leading-relaxed text-white/90 mb-6">
               Hello! I'm{" "}
@@ -94,15 +93,19 @@ export default function About() {
               {about.skills && (
                 <div className="flex items-start gap-3">
                   <Code size={18} className="mt-1" />
-                  <span className="leading-relaxed">
-                    {about.skills.join(", ")}
-                  </span>
+                  {about.skills.map((tech, i) => (
+                    <span
+                      key={i}
+                      className={`text-xs px-3 py-1 rounded-md border border-white/20 font-medium text-white 
+                                  ${techColors[i % techColors.length]}`}
+                    >
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
           </div>
-
-          {/* IMAGE */}
           <div className="flex justify-center">
             <div className="relative w-60 h-72 md:w-80 md:h-96">
               <Image

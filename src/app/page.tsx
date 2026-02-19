@@ -24,7 +24,7 @@ export default function Home() {
       ]);
       await Promise.all([minDelay, dataFetch]);
       setLoading(false);
-      setTimeout(() => setShowContent(true), 1000);
+      setTimeout(() => setShowContent(true), 100);
     };
     loadPage();
   }, []);
@@ -40,7 +40,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen ">
       <div
-        className={`transition-opacity duration-1000 ease-in-out ${
+        className={`transition-opacity duration-500 ease-in-out ${
           showContent ? "opacity-100" : "opacity-75"
         }`}
       >
